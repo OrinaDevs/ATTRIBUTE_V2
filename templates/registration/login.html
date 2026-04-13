@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Attribute Survey</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family:'Inter',sans-serif; background:#f0f4f8; min-height:100vh; display:flex; align-items:center; }
+    .auth-card { background:#fff; border-radius:20px; box-shadow:0 8px 40px rgba(0,0,0,0.1); padding:40px; max-width:440px; width:100%; }
+    .brand-icon { width:56px;height:56px;background:#1a3a5c;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px; }
+    .form-control { border-radius:10px; padding:10px 14px; border-color:#d1d5db; }
+    .form-control:focus { border-color:#1a3a5c; box-shadow:0 0 0 3px rgba(26,58,92,0.1); }
+    .btn-primary { background:#1a3a5c;border-color:#1a3a5c;border-radius:10px;padding:11px; font-weight:600; }
+    .btn-primary:hover { background:#1e4a75;border-color:#1e4a75; }
+    .divider { text-align:center;position:relative;margin:20px 0; }
+    .divider::before { content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:#e5e7eb; }
+    .divider span { background:#fff;padding:0 12px;position:relative;color:#9ca3af;font-size:13px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      {% if messages %}
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags|default:'info' }} mb-3 rounded-3">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+      <div class="auth-card">
+        <div class="text-center mb-4">
+          <div class="brand-icon"><i class="bi bi-geo-alt-fill text-white fs-4"></i></div>
+          <h4 class="fw-700 mb-1">Client Login</h4>
+          <p class="text-muted small">Sign in to access your project dashboard</p>
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label fw-500" style="font-size:13px;">Email Address</label>
+            <input type="email" name="username" class="form-control" placeholder="you@example.com" required autofocus/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-500" style="font-size:13px;">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required/>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mt-1">Sign In</button>
+        </form>
+        <div class="divider mt-4"><span>or</span></div>
+        <div class="text-center">
+          <p class="text-muted small">Don't have an account?
+            <a href="{% url 'register' %}" class="fw-600 text-decoration-none" style="color:#1a3a5c;">Register here</a>
+          </p>
+          <p class="text-muted small mt-2">Are you staff?
+            <a href="{% url 'staff_login' %}" class="fw-600 text-decoration-none text-warning">Staff Login →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

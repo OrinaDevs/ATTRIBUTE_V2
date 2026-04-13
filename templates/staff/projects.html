@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Projects – Staff{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Projects</h1>
+  <div class="d-flex gap-2">
+    <a href="?" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
+    <a href="?status=not_started" class="btn btn-sm {% if status_filter == 'not_started' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Not Started</a>
+    <a href="?status=in_progress" class="btn btn-sm {% if status_filter == 'in_progress' %}btn-primary{% else %}btn-outline-secondary{% endif %}">In Progress</a>
+    <a href="?status=completed" class="btn btn-sm {% if status_filter == 'completed' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Completed</a>
+  </div>
+</div>
+<div class="data-table">
+  <table class="table">
+    <thead>
+      <tr><th>Project</th><th>Client</th><th>Service</th><th>Progress</th><th>Status</th><th>Staff</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for p in projects %}
+      <tr>
+        <td>
+          <div class="fw-500" style="font-size:13.5px;">{{ p.title|truncatechars:40 }}</div>
+          <div style="font-size:12px;color:#9ca3af;"><i class="bi bi-geo-alt me-1"></i>{{ p.property_location|truncatechars:30|default:"—" }}</div>
+        </td>
+        <td style="font-size:13px;">
+          <div>{{ p.client.user.get_full_name }}</div>
+          <div style="font-size:12px;color:#9ca3af;"><code>{{ p.client.client_id }}</code></div>
+        </td>
+        <td style="font-size:13px;">{{ p.service.name|truncatechars:25 }}</td>
+        <td style="min-width:120px;">
+          <div class="d-flex align-items-center gap-2">
+            <div class="progress flex-grow-1" style="height:6px;">
+              <div class="progress-bar bg-success" style="width:{{ p.progress_percentage }}%"></div>
+            </div>
+            <small style="font-size:11px;">{{ p.progress_percentage }}%</small>
+          </div>
+        </td>
+        <td><span class="badge bg-{{ p.status_badge }}">{{ p.get_status_display }}</span></td>
+        <td style="font-size:13px;">{{ p.assigned_staff.first_name|default:"—" }}</td>
+        <td><a href="{% url 'staff_project_detail' p.pk %}" class="btn btn-sm btn-primary">Manage</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center text-muted py-5">No projects found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

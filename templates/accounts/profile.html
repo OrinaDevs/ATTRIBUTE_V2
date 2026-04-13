@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">My Profile</h1>
+</div>
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="form-card">
+      <div class="d-flex align-items-center gap-4 mb-4 pb-4" style="border-bottom:1px solid #e2e8f0;">
+        <div style="width:72px;height:72px;border-radius:50%;background:#1a3a5c;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#fff;flex-shrink:0;">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+        </div>
+        <div>
+          <div style="font-size:20px;font-weight:700;">{{ user.get_full_name }}</div>
+          <div style="color:#6b7280;font-size:14px;">{{ user.email }}</div>
+          <span class="badge bg-secondary mt-1">{{ user.get_role_display }}</span>
+          {% if user.client_profile %}<span class="badge bg-primary ms-1">{{ user.client_profile.client_id }}</span>{% endif %}
+        </div>
+      </div>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="form-label">First Name</label>
+            {{ form.first_name }}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">Last Name</label>
+            {{ form.last_name }}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">Phone</label>
+            {{ form.phone }}
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">ID / Passport</label>
+            {{ form.id_number }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Address</label>
+            {{ form.address }}
+          </div>
+          <div class="col-12">
+            <label class="form-label">Profile Photo</label>
+            {{ form.profile_photo }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-4 px-5">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

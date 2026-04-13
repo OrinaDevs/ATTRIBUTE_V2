@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Review Quotation QUO-{{ quotation.ref }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb" style="font-size:13px;">
+      <li class="breadcrumb-item"><a href="{% url 'staff_dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'staff_quotations' %}">Quotations</a></li>
+      <li class="breadcrumb-item active">Review QUO-{{ quotation.ref }}</li>
+    </ol></nav>
+    <h1 class="page-title">Review Quotation</h1>
+    <p class="page-subtitle">QUO-{{ quotation.ref }} &nbsp;·&nbsp; {{ quotation.service.name }}</p>
+  </div>
+  <span class="badge bg-{{ quotation.status_badge }}" style="font-size:14px;padding:8px 16px;">
+    {{ quotation.get_status_display }}
+  </span>
+</div>
+
+<div class="row g-4">
+  <!-- CLIENT REQUEST DETAILS -->
+  <div class="col-lg-6">
+    <div class="form-card h-100">
+      <h6 class="fw-700 mb-3"><i class="bi bi-person me-2 text-primary"></i>Client Request</h6>
+      <div class="mb-3 p-3" style="background:#f8fafc;border-radius:8px;">
+        <div class="fw-600">{{ quotation.user.get_full_name }}</div>
+        <div style="font-size:13px;color:#6b7280;">{{ quotation.user.email }} &nbsp;·&nbsp; {{ quotation.user.phone }}</div>
+        <div style="font-size:12px;color:#9ca3af;margin-top:2px;">{{ quotation.user.address }}</div>
+      </div>
+      <table class="table table-sm table-borderless" style="font-size:13.5px;">
+        <tr><td class="text-muted" style="width:140px;">Service</td><td class="fw-600">{{ quotation.service.name }}</td></tr>
+        <tr><td class="text-muted">Location</td><td>{{ quotation.property_location }}</td></tr>
+        <tr><td class="text-muted">Size</td><td>{{ quotation.property_size|default:"Not specified" }}</td></tr>
+        <tr><td class="text-muted">Urgency</td><td><span class="badge bg-{% if quotation.urgency == 'urgent' %}danger{% else %}secondary{% endif %}">{{ quotation.get_urgency_display }}</span></td></tr>
+        <tr><td class="text-muted">Submitted</td><td>{{ quotation.created_at|date:"d M Y, H:i" }}</td></tr>
+      </table>
+      <div class="mt-2">
+        <div class="text-muted small fw-500 mb-1">Project Description</div>
+        <div style="background:#f8fafc;border-radius:8px;padding:14px;font-size:14px;line-height:1.7;">
+          {{ quotation.description }}
+        </div>
+      </div>
+      {% if quotation.additional_notes %}
+      <div class="mt-3">
+        <div class="text-muted small fw-500 mb-1">Additional Notes</div>
+        <div style="font-size:13.5px;color:#6b7280;">{{ quotation.additional_notes }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- STAFF REVIEW FORM -->
+  <div class="col-lg-6">
+    <div class="form-card">
+      <h6 class="fw-700 mb-3"><i class="bi bi-pencil-square me-2 text-warning"></i>Your Review</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Quoted Amount (KES) *</label>
+          {{ form.quoted_amount }}
+          {% if form.quoted_amount.errors %}<div class="text-danger small mt-1">{{ form.quoted_amount.errors }}</div>{% endif %}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Valid Until</label>
+          {{ form.valid_until }}
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Review Notes <small class="text-muted">(visible to client)</small></label>
+          {{ form.staff_notes }}
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Action *</label>
+          {{ form.status }}
+          <div class="form-text">
+            <strong>Send to Client</strong> = client will be notified and can accept or reject.<br/>
+            <strong>Reject</strong> = request closed.
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-warning fw-700 btn-lg">
+            <i class="bi bi-send-check me-2"></i>Submit Review
+          </button>
+          <a href="{% url 'staff_quotations' %}" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

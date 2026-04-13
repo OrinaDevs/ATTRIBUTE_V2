@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Quotations – Staff{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Quotations</h1>
+  <div class="d-flex gap-2">
+    {% for val, label in quotation_statuses %}
+    <a href="?status={{ val }}" class="btn btn-sm {% if status_filter == val %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+      {{ label }}
+    </a>
+    {% endfor %}
+    <a href="?" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
+  </div>
+</div>
+<div class="data-table">
+  <table class="table">
+    <thead>
+      <tr><th>Ref</th><th>Client</th><th>Service</th><th>Location</th><th>Urgency</th><th>Status</th><th>Date</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for q in quotations %}
+      <tr>
+        <td><code style="font-size:12px;">QUO-{{ q.ref }}</code></td>
+        <td style="font-size:13px;">
+          <div class="fw-500">{{ q.user.get_full_name }}</div>
+          <div style="font-size:12px;color:#9ca3af;">{{ q.user.email }}</div>
+        </td>
+        <td style="font-size:13px;">{{ q.service.name|truncatechars:28 }}</td>
+        <td style="font-size:12px;color:#6b7280;">{{ q.property_location|truncatechars:25 }}</td>
+        <td>
+          <span class="badge bg-{% if q.urgency == 'urgent' %}danger{% else %}secondary{% endif %}">
+            {{ q.get_urgency_display }}
+          </span>
+        </td>
+        <td><span class="badge bg-{{ q.status_badge }}">{{ q.get_status_display }}</span></td>
+        <td style="font-size:12px;color:#9ca3af;">{{ q.created_at|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'review_quotation' q.pk %}" class="btn btn-sm btn-warning">Review</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="text-center text-muted py-5">No quotations found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

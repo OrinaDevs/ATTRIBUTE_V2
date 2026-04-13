@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Contact Us{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-title">Contact Us</h1></div>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="form-card">
+      <h6 class="fw-700 mb-3">Get in Touch</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3"><label class="form-label">Full Name</label><input type="text" name="name" class="form-control" required/></div>
+        <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" class="form-control" required/></div>
+        <div class="mb-3"><label class="form-label">Phone</label><input type="tel" name="phone" class="form-control"/></div>
+        <div class="mb-3"><label class="form-label">Subject</label><input type="text" name="subject" class="form-control" required/></div>
+        <div class="mb-4"><label class="form-label">Message</label><textarea name="message" class="form-control" rows="5" required></textarea></div>
+        <button type="submit" class="btn btn-primary w-100 fw-600">Send Message</button>
+      </form>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="form-card">
+      <h6 class="fw-700 mb-4">Our Contact Information</h6>
+      <div class="row g-3">
+        {% for icon, label, val in contact_items %}
+        <div class="col-sm-6"><div style="background:#f8fafc;border-radius:10px;padding:18px;">
+          <i class="bi bi-{{ icon }} text-primary fs-5 mb-2 d-block"></i>
+          <div style="font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.06em;">{{ label }}</div>
+          <div style="font-weight:600;font-size:14px;margin-top:2px;">{{ val }}</div>
+        </div></div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ service.name }} – Services{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb" style="font-size:13px;">
+      <li class="breadcrumb-item"><a href="{% url 'service_list' %}">Services</a></li>
+      <li class="breadcrumb-item active">{{ service.name }}</li>
+    </ol></nav>
+    <h1 class="page-title">{{ service.name }}</h1>
+    {% if service.category %}<p class="page-subtitle">{{ service.category.name }}</p>{% endif %}
+  </div>
+  <a href="{% url 'request_quotation_for_service' service.slug %}" class="btn btn-primary btn-lg px-4">
+    <i class="bi bi-send me-2"></i>Request Quotation
+  </a>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="form-card mb-4">
+      <h6 class="fw-700 mb-3">About This Service</h6>
+      <p style="font-size:15px;line-height:1.8;color:#374151;">{{ service.description }}</p>
+    </div>
+    {% if service.get_deliverables_list %}
+    <div class="form-card">
+      <h6 class="fw-700 mb-3"><i class="bi bi-check2-all me-2 text-success"></i>What You Receive</h6>
+      <ul style="padding-left:20px;line-height:2;">
+        {% for d in service.get_deliverables_list %}
+        <li style="font-size:14px;color:#374151;">{{ d }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-lg-4">
+    <div class="form-card mb-4" style="border:2px solid #1a3a5c;">
+      <div style="font-weight:800;font-size:22px;color:#1a3a5c;margin-bottom:4px;">{{ service.get_price_display }}</div>
+      {% if service.duration_estimate %}
+      <div style="font-size:13px;color:#6b7280;margin-bottom:20px;"><i class="bi bi-clock me-1"></i>{{ service.duration_estimate }}</div>
+      {% endif %}
+      <a href="{% url 'request_quotation_for_service' service.slug %}" class="btn btn-primary w-100 btn-lg fw-700 mb-2">
+        Request This Service
+      </a>
+      <p class="text-muted text-center" style="font-size:12px;margin-top:8px;">No commitment. We'll send you a custom quote.</p>
+    </div>
+    {% if related %}
+    <div class="form-card">
+      <h6 class="fw-700 mb-3">Related Services</h6>
+      {% for s in related %}
+      <a href="{% url 'service_detail' s.slug %}" class="d-flex align-items-center gap-3 py-2 text-decoration-none text-dark border-bottom">
+        <div style="width:36px;height:36px;background:#eff6ff;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="bi bi-geo-alt text-primary" style="font-size:16px;"></i>
+        </div>
+        <div style="font-size:13.5px;font-weight:500;">{{ s.name }}</div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

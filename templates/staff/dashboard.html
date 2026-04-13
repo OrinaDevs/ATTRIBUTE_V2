@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Staff Dashboard – Attribute Survey{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Staff Dashboard</h1>
+    <p class="page-subtitle">Welcome, {{ user.first_name }}. Here's your work overview.</p>
+  </div>
+  {% if user.is_admin_member %}
+  <a href="/admin/" class="btn btn-outline-secondary"><i class="bi bi-gear me-2"></i>Admin Panel</a>
+  {% endif %}
+</div>
+
+<!-- STATS -->
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff7ed;color:#ea580c;"><i class="bi bi-hourglass-split"></i></div>
+      <div>
+        <div class="stat-num" style="color:#ea580c;">{{ pending_quotations|length }}</div>
+        <div class="stat-label">Pending Quotations</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="bi bi-kanban"></i></div>
+      <div>
+        <div class="stat-num" style="color:#2563eb;">{{ active_projects }}</div>
+        <div class="stat-label">Active Projects</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="bi bi-check2-circle"></i></div>
+      <div>
+        <div class="stat-num" style="color:#16a34a;">{{ completed_projects }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fdf4ff;color:#9333ea;"><i class="bi bi-people"></i></div>
+      <div>
+        <div class="stat-num" style="color:#9333ea;">{{ total_clients }}</div>
+        <div class="stat-label">Total Clients</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- PENDING QUOTATIONS -->
+  <div class="col-lg-6">
+    <div class="data-table">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-700"><i class="bi bi-file-earmark-text me-2 text-warning"></i>Pending Quotations</h6>
+        <a href="{% url 'staff_quotations' %}" class="btn btn-sm btn-outline-warning">View All</a>
+      </div>
+      <table class="table">
+        <thead><tr><th>Ref</th><th>Client</th><th>Service</th><th></th></tr></thead>
+        <tbody>
+          {% for q in pending_quotations %}
+          <tr>
+            <td><code style="font-size:12px;">QUO-{{ q.ref }}</code></td>
+            <td style="font-size:13px;">{{ q.user.first_name }} {{ q.user.last_name }}</td>
+            <td style="font-size:13px;">{{ q.service.name|truncatechars:22 }}</td>
+            <td>
+              <a href="{% url 'review_quotation' q.pk %}" class="btn btn-sm btn-warning" style="font-size:12px;padding:3px 10px;">Review</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No pending quotations.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RECENT PROJECTS -->
+  <div class="col-lg-6">
+    <div class="data-table">
+      <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+        <h6 class="mb-0 fw-700"><i class="bi bi-kanban me-2 text-primary"></i>Recent Projects</h6>
+        <a href="{% url 'staff_projects' %}" class="btn btn-sm btn-outline-primary">View All</a>
+      </div>
+      <table class="table">
+        <thead><tr><th>Project</th><th>Progress</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for p in projects %}
+          <tr>
+            <td style="font-size:13px;">{{ p.title|truncatechars:28 }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1" style="height:6px;">
+                  <div class="progress-bar" style="width:{{ p.progress_percentage }}%"></div>
+                </div>
+                <small style="font-size:11px;color:#6b7280;white-space:nowrap;">{{ p.progress_percentage }}%</small>
+              </div>
+            </td>
+            <td><span class="badge bg-{{ p.status_badge }}">{{ p.get_status_display }}</span></td>
+            <td>
+              <a href="{% url 'staff_project_detail' p.pk %}" class="btn btn-sm btn-outline-secondary" style="font-size:12px;padding:3px 10px;">Manage</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No projects assigned.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

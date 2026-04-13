@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+{% block title %}Invoice INV-{{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb" style="font-size:13px;">
+      <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'payment_list' %}">Invoices</a></li>
+      <li class="breadcrumb-item active">INV-{{ invoice.invoice_number }}</li>
+    </ol></nav>
+    <h1 class="page-title">Invoice <code style="font-size:18px;">INV-{{ invoice.invoice_number }}</code></h1>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{% url 'download_invoice' invoice.pk %}" class="btn btn-outline-primary">
+      <i class="bi bi-download me-2"></i>Download PDF
+    </a>
+    {% if invoice.status == 'unpaid' or invoice.status == 'partial' %}
+    <a href="{% url 'mark_payment' invoice.pk %}" class="btn btn-success">
+      <i class="bi bi-credit-card me-2"></i>Make Payment
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <!-- INVOICE CARD -->
+    <div class="form-card" style="border-top:4px solid #1a3a5c;">
+      <!-- invoice header -->
+      <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div style="width:44px;height:44px;background:#1a3a5c;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+              <i class="bi bi-geo-alt-fill text-white"></i>
+            </div>
+            <div>
+              <div style="font-weight:800;font-size:16px;color:#1a3a5c;">Attribute Land Survey & Consultants</div>
+              <div style="font-size:12px;color:#6b7280;">Nairobi, Kenya | +254 700 000 000</div>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <div style="font-size:24px;font-weight:800;color:#1a3a5c;">INVOICE</div>
+          <div style="font-size:14px;color:#6b7280;">INV-{{ invoice.invoice_number }}</div>
+          <span class="badge bg-{{ invoice.status_badge }} mt-1" style="font-size:12px;">{{ invoice.get_status_display }}</span>
+        </div>
+      </div>
+
+      <hr/>
+
+      <!-- bill to / dates -->
+      <div class="row mb-4">
+        <div class="col-sm-6">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Bill To</div>
+          <div style="font-weight:600;">{{ invoice.client.user.get_full_name }}</div>
+          <div style="font-size:13px;color:#6b7280;">{{ invoice.client.user.email }}</div>
+          <div style="font-size:13px;color:#6b7280;">{{ invoice.client.user.phone }}</div>
+          <div style="font-size:13px;color:#6b7280;">{{ invoice.client.user.address }}</div>
+          <div style="font-size:12px;color:#9ca3af;margin-top:4px;">Client ID: <code>{{ invoice.client.client_id }}</code></div>
+        </div>
+        <div class="col-sm-6 text-sm-end">
+          <div style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px;">Details</div>
+          <div style="font-size:13px;">Invoice Date: <strong>{{ invoice.created_at|date:"d M Y" }}</strong></div>
+          <div style="font-size:13px;">Due Date: <strong>{{ invoice.due_date|date:"d M Y" }}</strong></div>
+          {% if invoice.paid_at %}
+          <div style="font-size:13px;color:#16a34a;">Paid: <strong>{{ invoice.paid_at|date:"d M Y" }}</strong></div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- line items -->
+      <table class="table" style="font-size:14px;">
+        <thead style="background:#f8fafc;">
+          <tr>
+            <th style="font-weight:600;color:#374151;padding:12px 16px;">#</th>
+            <th style="font-weight:600;color:#374151;padding:12px 16px;">Description</th>
+            <th style="font-weight:600;color:#374151;padding:12px 16px;text-align:right;">Amount (KES)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:14px 16px;color:#6b7280;">1</td>
+            <td style="padding:14px 16px;">
+              <div class="fw-600">
+                {% if invoice.quotation %}{{ invoice.quotation.service.name }}{% else %}Professional Services{% endif %}
+              </div>
+              <div style="font-size:12px;color:#6b7280;margin-top:4px;white-space:pre-line;">{{ invoice.description|truncatechars:200 }}</div>
+            </td>
+            <td style="padding:14px 16px;text-align:right;font-weight:600;">{{ invoice.amount|floatformat:2 }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- totals -->
+      <div class="row justify-content-end">
+        <div class="col-sm-6 col-md-4">
+          <table class="table table-sm table-borderless" style="font-size:13.5px;">
+            <tr>
+              <td class="text-muted">Subtotal</td>
+              <td class="text-end">KES {{ invoice.amount|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td class="text-muted">VAT (16%)</td>
+              <td class="text-end">KES {{ invoice.vat_amount|floatformat:2 }}</td>
+            </tr>
+            <tr style="border-top:2px solid #e2e8f0;">
+              <td class="fw-700" style="padding-top:10px;">Total Due</td>
+              <td class="text-end fw-700" style="padding-top:10px;font-size:16px;color:#1a3a5c;">
+                KES {{ invoice.total_with_vat|floatformat:2 }}
+              </td>
+            </tr>
+            {% if invoice.amount_paid > 0 %}
+            <tr>
+              <td class="text-success">Paid</td>
+              <td class="text-end text-success">KES {{ invoice.amount_paid|floatformat:2 }}</td>
+            </tr>
+            <tr>
+              <td class="fw-700 text-danger">Balance</td>
+              <td class="text-end fw-700 text-danger">KES {{ invoice.balance_due|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+          </table>
+        </div>
+      </div>
+
+      {% if invoice.status == 'paid' %}
+      <div class="alert alert-success mt-3" style="border-radius:10px;">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <strong>Payment Received</strong> — via {{ invoice.payment_method }} | Ref: {{ invoice.payment_reference }}
+        on {{ invoice.paid_at|date:"d M Y, H:i" }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- PAYMENT INSTRUCTIONS -->
+    {% if invoice.status != 'paid' %}
+    <div class="form-card mb-4" style="border:1px solid #bfdbfe;">
+      <h6 class="fw-700 mb-3" style="color:#1d4ed8;"><i class="bi bi-credit-card me-2"></i>Payment Methods</h6>
+      <div class="d-flex flex-column gap-3" style="font-size:13.5px;">
+        <div style="background:#f0fdf4;border-radius:8px;padding:14px;">
+          <div class="fw-600 mb-1"><i class="bi bi-phone me-2 text-success"></i>M-PESA Paybill</div>
+          <div>Paybill: <strong>123456</strong></div>
+          <div>Account: <strong>{{ invoice.client.client_id }}</strong></div>
+        </div>
+        <div style="background:#eff6ff;border-radius:8px;padding:14px;">
+          <div class="fw-600 mb-1"><i class="bi bi-bank me-2 text-primary"></i>Bank Transfer</div>
+          <div>Bank: <strong>Equity Bank</strong></div>
+          <div>Account: <strong>0123456789</strong></div>
+          <div>Ref: <strong>INV-{{ invoice.invoice_number }}</strong></div>
+        </div>
+      </div>
+      <a href="{% url 'mark_payment' invoice.pk %}" class="btn btn-success w-100 mt-3 fw-600">
+        <i class="bi bi-check2-circle me-2"></i>Confirm Payment
+      </a>
+    </div>
+    {% endif %}
+
+    <!-- LINKED PROJECT -->
+    {% if invoice.quotation and invoice.quotation.project %}
+    {% with proj=invoice.quotation.project %}
+    <div class="form-card">
+      <h6 class="fw-700 mb-3"><i class="bi bi-kanban me-2 text-success"></i>Linked Project</h6>
+      <div style="font-size:14px;font-weight:600;margin-bottom:8px;">{{ proj.title|truncatechars:50 }}</div>
+      <div class="d-flex justify-content-between mb-1">
+        <small class="text-muted">Progress</small>
+        <small class="fw-600">{{ proj.progress_percentage }}%</small>
+      </div>
+      <div class="progress mb-3" style="height:6px;">
+        <div class="progress-bar bg-success" style="width:{{ proj.progress_percentage }}%;"></div>
+      </div>
+      <a href="{% url 'project_detail' proj.pk %}" class="btn btn-outline-success w-100 btn-sm">
+        View Project
+      </a>
+    </div>
+    {% endwith %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

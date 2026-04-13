@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Quotation QUO-{{ quotation.ref }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb" style="font-size:13px;">
+      <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'quotation_list' %}">Quotations</a></li>
+      <li class="breadcrumb-item active">QUO-{{ quotation.ref }}</li>
+    </ol></nav>
+    <h1 class="page-title">Quotation <code style="font-size:18px;">QUO-{{ quotation.ref }}</code></h1>
+  </div>
+  <span class="badge bg-{{ quotation.status_badge }}" style="font-size:14px;padding:8px 16px;">{{ quotation.get_status_display }}</span>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="form-card mb-4">
+      <h6 class="fw-700 mb-3">Your Request</h6>
+      <table class="table table-sm table-borderless" style="font-size:14px;">
+        <tr><td class="text-muted" style="width:160px;">Service</td><td class="fw-500">{{ quotation.service.name }}</td></tr>
+        <tr><td class="text-muted">Location</td><td>{{ quotation.property_location }}</td></tr>
+        <tr><td class="text-muted">Property Size</td><td>{{ quotation.property_size|default:"Not specified" }}</td></tr>
+        <tr><td class="text-muted">Urgency</td><td>{{ quotation.get_urgency_display }}</td></tr>
+        <tr><td class="text-muted">Submitted</td><td>{{ quotation.created_at|date:"d M Y, H:i" }}</td></tr>
+      </table>
+      <div class="mt-2">
+        <div class="text-muted small fw-500 mb-1">Project Description</div>
+        <div style="background:#f8fafc;border-radius:8px;padding:12px;font-size:14px;line-height:1.7;">{{ quotation.description }}</div>
+      </div>
+    </div>
+
+    {% if quotation.status in 'awaiting_client accepted rejected' %}
+    <div class="form-card">
+      <h6 class="fw-700 mb-3"><i class="bi bi-person-check me-2 text-primary"></i>Our Quotation to You</h6>
+      {% if quotation.quoted_amount %}
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:16px 24px;text-align:center;">
+          <div style="font-size:28px;font-weight:800;color:#16a34a;">KES {{ quotation.quoted_amount|floatformat:2 }}</div>
+          <div style="font-size:12px;color:#6b7280;">Quoted Amount</div>
+        </div>
+        {% if quotation.valid_until %}
+        <div class="text-muted small">Valid until: <strong>{{ quotation.valid_until|date:"d M Y" }}</strong></div>
+        {% endif %}
+      </div>
+      {% endif %}
+      {% if quotation.staff_notes %}
+      <div style="background:#fffbeb;border-left:3px solid #f59e0b;padding:12px;border-radius:0 8px 8px 0;font-size:14px;">
+        <div class="fw-600 mb-1" style="color:#92400e;">Notes from our team:</div>
+        {{ quotation.staff_notes }}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-5">
+    <!-- STATUS TIMELINE -->
+    <div class="form-card mb-4">
+      <h6 class="fw-700 mb-3">Status Timeline</h6>
+      <div class="progress-tracker">
+        {% for step_status, step_label in quotation.STATUS_CHOICES %}
+        <div class="stage-item {% if quotation.status == step_status %}in_progress{% elif quotation.status > step_status %}completed{% endif %}">
+          <div class="stage-icon {% if quotation.status == step_status %}in_progress{% elif quotation.status >= step_status %}completed{% endif %}">
+            <i class="bi bi-{% if quotation.status == step_status %}clock{% else %}check{% endif %}"></i>
+          </div>
+          <div class="stage-body">
+            <div class="stage-name">{{ step_label }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- CLIENT ACTION -->
+    {% if quotation.can_respond %}
+    <div class="form-card" style="border:2px solid #3b82f6;">
+      <h6 class="fw-700 mb-2" style="color:#1d4ed8;"><i class="bi bi-hand-index me-2"></i>Your Response Required</h6>
+      <p class="text-muted small mb-3">Please review the quotation above and accept or reject it.</p>
+      <form method="post" action="{% url 'quotation_respond' quotation.pk %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Comments (optional)</label>
+          <textarea name="client_response_notes" class="form-control" rows="3" placeholder="Any questions or comments?"></textarea>
+        </div>
+        <div class="d-grid gap-2">
+          <button type="submit" name="action" value="accept" class="btn btn-success fw-600">
+            <i class="bi bi-check2-circle me-2"></i>Accept Quotation & Pay
+          </button>
+          <button type="submit" name="action" value="reject" class="btn btn-outline-danger"
+                  onclick="return confirm('Are you sure you want to reject this quotation?')">
+            <i class="bi bi-x-circle me-2"></i>Reject
+          </button>
+        </div>
+      </form>
+    </div>
+    {% elif quotation.status == 'accepted' %}
+    <div class="alert alert-success"><i class="bi bi-check-circle me-2"></i>You accepted this quotation. Check your invoices to make payment.</div>
+    <a href="{% url 'payment_list' %}" class="btn btn-success w-100">View Invoice</a>
+    {% elif quotation.status == 'rejected' %}
+    <div class="alert alert-secondary"><i class="bi bi-x-circle me-2"></i>You rejected this quotation.</div>
+    <a href="{% url 'request_quotation' %}" class="btn btn-outline-primary w-100">Request New Quotation</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

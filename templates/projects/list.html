@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}My Projects{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Projects</h1>
+    <p class="page-subtitle">Track the progress of all your land survey projects.</p>
+  </div>
+</div>
+
+{% if projects %}
+<div class="row g-4">
+  {% for project in projects %}
+  <div class="col-md-6 col-xl-4">
+    <div class="form-card h-100 d-flex flex-column" style="transition:transform 0.2s,box-shadow 0.2s;"
+         onmouseenter="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.1)'"
+         onmouseleave="this.style.transform='';this.style.boxShadow=''">
+      <div class="d-flex align-items-start justify-content-between mb-3">
+        <div>
+          <span class="badge bg-{{ project.status_badge }} mb-2">{{ project.get_status_display }}</span>
+          <h6 class="fw-700 mb-0" style="font-size:15px;">{{ project.title|truncatechars:50 }}</h6>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#6b7280;margin-bottom:16px;">
+        <i class="bi bi-geo-alt me-1"></i>{{ project.property_location|truncatechars:60|default:"—" }}
+      </div>
+      <div class="mb-1 d-flex justify-content-between">
+        <small class="text-muted">Progress</small>
+        <small class="fw-600">{{ project.progress_percentage }}%</small>
+      </div>
+      <div class="progress mb-3" style="height:8px;border-radius:6px;">
+        <div class="progress-bar bg-success" style="width:{{ project.progress_percentage }}%;border-radius:6px;"></div>
+      </div>
+
+      <!-- mini stage dots -->
+      <div class="d-flex gap-1 mb-3">
+        {% for stage in project.stages.all %}
+        <div style="flex:1;height:6px;border-radius:3px;background:{% if stage.status == 'completed' %}#22c55e{% elif stage.status == 'in_progress' %}#3b82f6{% else %}#e2e8f0{% endif %};"
+             title="{{ stage.name }}: {{ stage.get_status_display }}"></div>
+        {% endfor %}
+      </div>
+
+      <div style="font-size:12px;color:#9ca3af;" class="mb-3">
+        {% if project.start_date %}Started {{ project.start_date|date:"d M Y" }}{% else %}Not yet started{% endif %}
+        &nbsp;·&nbsp; {{ project.service.name }}
+      </div>
+      <div class="mt-auto">
+        <a href="{% url 'project_detail' project.pk %}" class="btn btn-outline-primary btn-sm w-100">
+          View Progress <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+  <i class="bi bi-kanban" style="font-size:64px;color:#d1d5db;"></i>
+  <h5 class="mt-4 text-muted">No projects yet</h5>
+  <p class="text-muted">Your projects will appear here once you accept a quotation and make payment.</p>
+  <a href="{% url 'service_list' %}" class="btn btn-primary mt-2">Browse Services</a>
+</div>
+{% endif %}
+{% endblock %}

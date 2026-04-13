@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Confirm Payment – INV-{{ invoice.invoice_number }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Confirm Payment</h1>
+    <p class="page-subtitle">Enter your transaction details to confirm payment for Invoice INV-{{ invoice.invoice_number }}</p>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <!-- AMOUNT DUE -->
+    <div class="form-card mb-4 text-center" style="background:linear-gradient(135deg,#1a3a5c,#0d2137);color:#fff;">
+      <div style="font-size:14px;opacity:0.7;margin-bottom:8px;">Amount Due</div>
+      <div style="font-size:42px;font-weight:800;">KES {{ invoice.total_with_vat|floatformat:2 }}</div>
+      <div style="font-size:13px;opacity:0.6;margin-top:4px;">Invoice INV-{{ invoice.invoice_number }}</div>
+    </div>
+
+    <div class="form-card">
+      <h6 class="fw-700 mb-4">Payment Details</h6>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label">Payment Method</label>
+          <select name="payment_method" class="form-select" id="payMethod">
+            <option value="mpesa">M-PESA</option>
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cheque">Cheque</option>
+            <option value="cash">Cash</option>
+          </select>
+        </div>
+
+        <!-- M-PESA info -->
+        <div id="mpesaInfo" class="alert alert-success" style="font-size:13.5px;">
+          <i class="bi bi-phone me-2"></i>
+          Go to <strong>M-PESA → Lipa na M-PESA → Pay Bill</strong><br/>
+          Business No: <strong>123456</strong> | Account: <strong>{{ invoice.client.client_id }}</strong><br/>
+          Amount: <strong>KES {{ invoice.total_with_vat|floatformat:0 }}</strong>
+        </div>
+        <div id="bankInfo" class="alert alert-info d-none" style="font-size:13.5px;">
+          <i class="bi bi-bank me-2"></i>
+          Bank: <strong>Equity Bank</strong> | Account: <strong>0123456789</strong><br/>
+          Reference: <strong>INV-{{ invoice.invoice_number }}</strong>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Transaction Reference / Code *</label>
+          <input type="text" name="payment_reference" class="form-control"
+                 placeholder="e.g. QHK3R7X8P9" required
+                 style="font-size:18px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;"/>
+          <div class="form-text">Enter the M-PESA transaction code or bank reference number.</div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success btn-lg fw-700">
+            <i class="bi bi-check2-circle me-2"></i>Confirm & Submit Payment
+          </button>
+          <a href="{% url 'payment_detail' invoice.pk %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  const sel = document.getElementById('payMethod');
+  const mpesa = document.getElementById('mpesaInfo');
+  const bank = document.getElementById('bankInfo');
+  sel.addEventListener('change', function() {
+    mpesa.classList.toggle('d-none', this.value !== 'mpesa');
+    bank.classList.toggle('d-none', this.value !== 'bank_transfer');
+  });
+  document.querySelector('input[name="payment_reference"]').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+</script>
+{% endblock %}

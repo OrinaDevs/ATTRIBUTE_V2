@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}About Us{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-title">About Attribute Land Survey & Consultants</h1></div>
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="form-card">
+      <p style="font-size:15px;line-height:1.9;color:#374151;">
+        Attribute Land Survey & Consultants is a licensed surveying and consultancy firm registered in Kenya.
+        We provide a full spectrum of land survey and property consultancy services to individuals, corporations,
+        and government agencies across all 47 counties.
+      </p>
+      <p style="font-size:15px;line-height:1.9;color:#374151;margin-top:16px;">
+        Our team of registered surveyors, planners, and legal experts delivers precise, timely, and compliant
+        outputs that meet the standards of the Survey of Kenya and the National Land Commission.
+      </p>
+      <div class="row g-3 mt-3">
+        {% for item in "1234"|make_list %}
+        <div class="col-sm-6">
+          <div style="background:#f8fafc;border-radius:10px;padding:20px;">
+            {% if forloop.counter == 1 %}
+            <i class="bi bi-patch-check-fill text-primary fs-4 mb-2 d-block"></i>
+            <div class="fw-700">Licensed & Certified</div>
+            <div style="font-size:13px;color:#6b7280;">Registered with the Survey of Kenya</div>
+            {% elif forloop.counter == 2 %}
+            <i class="bi bi-clock-history text-success fs-4 mb-2 d-block"></i>
+            <div class="fw-700">15+ Years Experience</div>
+            <div style="font-size:13px;color:#6b7280;">Trusted by 500+ satisfied clients</div>
+            {% elif forloop.counter == 3 %}
+            <i class="bi bi-geo-alt-fill text-warning fs-4 mb-2 d-block"></i>
+            <div class="fw-700">Nationwide Coverage</div>
+            <div style="font-size:13px;color:#6b7280;">All 47 counties covered</div>
+            {% elif forloop.counter == 4 %}
+            <i class="bi bi-shield-check text-danger fs-4 mb-2 d-block"></i>
+            <div class="fw-700">Compliant & Accurate</div>
+            <div style="font-size:13px;color:#6b7280;">Meets NLC & Lands Ministry standards</div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="form-card" style="background:#1a3a5c;color:#fff;">
+      <h6 class="fw-700 mb-3" style="color:#4fc3f7;">Get in Touch</h6>
+      <p style="font-size:14px;opacity:0.8;">Ready to start your project? Contact us or request a quotation today.</p>
+      <a href="{% url 'contact' %}" class="btn btn-light w-100 mb-2 fw-600">Contact Us</a>
+      <a href="{% url 'request_quotation' %}" class="btn btn-outline-light w-100 fw-600">Request Quote</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

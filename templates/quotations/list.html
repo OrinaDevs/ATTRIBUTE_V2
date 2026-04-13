@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}My Quotations{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Quotations</h1>
+    <p class="page-subtitle">Track all your quotation requests.</p>
+  </div>
+  <a href="{% url 'request_quotation' %}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-2"></i>New Request
+  </a>
+</div>
+
+<div class="data-table">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Reference</th><th>Service</th><th>Location</th>
+        <th>Quoted</th><th>Status</th><th>Date</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in quotations %}
+      <tr>
+        <td><code style="font-size:12px;">QUO-{{ q.ref }}</code></td>
+        <td style="font-size:13px;">{{ q.service.name }}</td>
+        <td style="font-size:13px;color:#6b7280;">{{ q.property_location|truncatechars:30 }}</td>
+        <td style="font-weight:600;">
+          {% if q.quoted_amount %}KES {{ q.quoted_amount|floatformat:2 }}{% else %}<span class="text-muted">Pending</span>{% endif %}
+        </td>
+        <td><span class="badge bg-{{ q.status_badge }}">{{ q.get_status_display }}</span></td>
+        <td style="font-size:12px;color:#9ca3af;">{{ q.created_at|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'quotation_detail' q.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center py-5 text-muted">
+          <i class="bi bi-file-earmark-text" style="font-size:40px;color:#d1d5db;display:block;margin-bottom:12px;"></i>
+          No quotations yet. <a href="{% url 'request_quotation' %}">Request your first quote.</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

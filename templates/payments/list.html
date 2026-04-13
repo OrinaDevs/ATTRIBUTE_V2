@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Invoices{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Invoices & Payments</h1>
+</div>
+<div class="data-table">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Invoice No</th><th>Description</th><th>Amount</th>
+        <th>Status</th><th>Due Date</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inv in invoices %}
+      <tr>
+        <td><code>INV-{{ inv.invoice_number }}</code></td>
+        <td style="font-size:13px;">
+          {% if inv.quotation %}{{ inv.quotation.service.name }}{% else %}Professional Services{% endif %}
+        </td>
+        <td class="fw-600">KES {{ inv.total_with_vat|floatformat:2 }}</td>
+        <td><span class="badge bg-{{ inv.status_badge }}">{{ inv.get_status_display }}</span></td>
+        <td style="font-size:13px;">{{ inv.due_date|date:"d M Y" }}</td>
+        <td>
+          <a href="{% url 'payment_detail' inv.pk %}" class="btn btn-sm btn-outline-primary me-1">View</a>
+          <a href="{% url 'download_invoice' inv.pk %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-download"></i>
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted py-5">No invoices yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

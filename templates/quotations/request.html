@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Request Quotation{% if service %} – {{ service.name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Request a Quotation</h1>
+    <p class="page-subtitle">Fill in your project details and we'll get back to you with a custom quote.</p>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    {% if service %}
+    <div class="form-card mb-4" style="background:#eff6ff;border:1px solid #bfdbfe;">
+      <div class="d-flex align-items-center gap-3">
+        <div style="width:44px;height:44px;background:#dbeafe;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#2563eb;">
+          <i class="bi bi-geo-alt"></i>
+        </div>
+        <div>
+          <div class="fw-700" style="color:#1d4ed8;">{{ service.name }}</div>
+          <div style="font-size:13px;color:#6b7280;">{{ service.short_description|default:service.description|truncatechars:120 }}</div>
+        </div>
+        {% if service.base_price %}
+        <div class="ms-auto text-end">
+          <div style="font-size:12px;color:#6b7280;">From</div>
+          <div style="font-weight:700;color:#1d4ed8;">KES {{ service.base_price|floatformat:0 }}</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="form-card">
+      <h6 class="fw-700 mb-4">Project Details</h6>
+      <form method="post">
+        {% csrf_token %}
+        {% if not service %}
+        <div class="mb-3">
+          <label class="form-label">Service *</label>
+          {{ form.service }}
+        </div>
+        {% else %}
+          {{ form.service }}
+        {% endif %}
+        <div class="mb-3">
+          <label class="form-label">Property / Site Location *</label>
+          {{ form.property_location }}
+          <div class="form-text">e.g. Plot 123, Karen, Nairobi or GPS coordinates</div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <label class="form-label">Approximate Size</label>
+            {{ form.property_size }}
+            <div class="form-text">e.g. 2 acres, 500 sqm</div>
+          </div>
+          <div class="col-sm-6">
+            <label class="form-label">Urgency</label>
+            {{ form.urgency }}
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Project Description / Requirements *</label>
+          {{ form.description }}
+          <div class="form-text">Describe what you need in as much detail as possible.</div>
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Additional Notes</label>
+          {{ form.additional_notes }}
+        </div>
+        <div class="d-flex gap-3">
+          <button type="submit" class="btn btn-primary btn-lg px-5 fw-600">
+            <i class="bi bi-send me-2"></i>Submit Request
+          </button>
+          <a href="{% url 'service_list' %}" class="btn btn-outline-secondary btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
