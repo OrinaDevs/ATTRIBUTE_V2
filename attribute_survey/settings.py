@@ -109,5 +109,5 @@ OTP_EXPIRY_MINUTES = 10
 COMPANY_NAME = 'Attribute Land Survey & Consultants'
 COMPANY_ADDRESS = 'Kisii, Kenya'
 COMPANY_PHONE = '+254 713 107 046'
-COMPANY_EMAIL = 'surveyattribute@gmail.com'
+COMPANY_EMAIL = 'oransoftwares@gmail.com'
 COMPANY_WEBSITE = 'www.attributesurvey.co.ke'
