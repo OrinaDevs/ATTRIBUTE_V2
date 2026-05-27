@@ -107,7 +107,7 @@ DEFAULT_FROM_EMAIL = 'Attribute Land Survey <noreply@attributesurvey.co.ke>'
 # OTP Settings
 OTP_EXPIRY_MINUTES = 10
 COMPANY_NAME = 'Attribute Land Survey & Consultants'
-COMPANY_ADDRESS = 'Nairobi, Kenya'
-COMPANY_PHONE = '+254 700 000 000'
-COMPANY_EMAIL = 'info@attributesurvey.co.ke'
+COMPANY_ADDRESS = 'Kisii, Kenya'
+COMPANY_PHONE = '+254 713 107 046'
+COMPANY_EMAIL = 'surveyattribute@gmail.com'
 COMPANY_WEBSITE = 'www.attributesurvey.co.ke'

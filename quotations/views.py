@@ -7,6 +7,8 @@ from .forms import QuotationRequestForm, ClientResponseForm
 from services.models import Service
 from clients.models import Client
 from clients.utils import create_client_from_quotation
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 
 @login_required
@@ -18,6 +20,21 @@ def request_quotation(request, slug=None):
             q = form.save(commit=False)
             q.user = request.user
             q.save()
+
+            EmailMessage(
+                subject=f'New Quotation Request - {q.service.name}',
+                body=(
+                    f'A new quotation request has been submitted.\n\n'
+                    f'Client: {q.user.get_full_name() or q.user.email}\n'
+                    f'Email: {q.user.email}\n'
+                    f'Service: {q.service.name}\n'
+                    f'Notes: {q.notes or "None"}'
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[settings.COMPANY_EMAIL],
+                reply_to=[q.user.email],
+            ).send(fail_silently=True)
+
             messages.success(request, 'Your quotation request has been submitted. We will review it and get back to you.')
             return redirect('quotation_detail', pk=q.pk)
     else:
