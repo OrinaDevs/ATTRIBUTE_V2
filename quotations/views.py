@@ -28,12 +28,12 @@ def request_quotation(request, slug=None):
                     f'Client: {q.user.get_full_name() or q.user.email}\n'
                     f'Email: {q.user.email}\n'
                     f'Service: {q.service.name}\n'
-                    f'Notes: {q.notes or "None"}'
+                    f'Description:\n{q.description}'
                 ),
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[settings.COMPANY_EMAIL],
                 reply_to=[q.user.email],
-            ).send(fail_silently=True)
+            ).send(fail_silently=False)
 
             messages.success(request, 'Your quotation request has been submitted. We will review it and get back to you.')
             return redirect('quotation_detail', pk=q.pk)
