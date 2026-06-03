@@ -103,6 +103,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Attribute Land Survey <noreply@attributesurvey.co.ke>'
+EMAIL_TIMEOUT = 10
 
 # OTP Settings
 OTP_EXPIRY_MINUTES = 10
